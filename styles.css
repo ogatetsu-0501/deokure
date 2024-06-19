@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: calc(33.33% - 20px); /* カードを横3列に配置 */
+    box-sizing: border-box;
+}
+
+.horse-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.horse-input input, .horse-input select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+#result {
+    margin-top: 20px;
+}
