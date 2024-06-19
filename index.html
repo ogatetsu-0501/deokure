@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>レースシミュレーション</h1>
+    <h1>千直ラモ固有発動シミュレーター</h1>
+    <p>各種スキルは発動率100%(だるいので)</p>
+    <p>補正パワー値は緑とかもろもろ入れた後の値(だるいので)</p>
+    <p>シミュレーション回数=20万で±0.2%くらいだと思う多分おそらくメイビー</p>
+    <div id="horseInputs" class="card-container"></div>
     <label for="numSimulations">シミュレーション回数:</label>
     <input type="number" id="numSimulations" value="200000" min="1" />
-    <div id="horseInputs" class="card-container"></div>
     <button onclick="simulate()">シミュレーションを実行</button>
     <div id="loading" class="loading hidden">
       <div class="spinner"></div>
