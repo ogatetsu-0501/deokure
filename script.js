@@ -29,56 +29,56 @@ function createHorseInputs() {
     const horseDiv = document.createElement("div");
     horseDiv.className = "horse-input card";
     horseDiv.innerHTML = `
-            <h2>Horse ${i + 1}</h2>
-            <label for="power${i}">補正パワー値:</label>
-            <input type="number" id="power${i}" min="0" value="1300">
-            <label for="track${i}">バ場適性:</label>
-            <select id="track${i}">
-                <option value="1.05">S</option>
-                <option value="1">A</option>
-                <option value="0.9">B</option>
-                <option value="0.8">C</option>
-                <option value="0.6">D</option>
-                <option value="0.4">E</option>
-                <option value="0.2">F</option>
-                <option value="0.1">G</option>
-            </select>
-            <label for="distance${i}">距離適性:</label>
-            <select id="distance${i}">
-                <option value="1.0">S</option>
-                <option value="1.0">A</option>
-                <option value="1.0">B</option>
-                <option value="1.0">C</option>
-                <option value="1.0">D</option>
-                <option value="0.6">E</option>
-                <option value="0.5">F</option>
-                <option value="0.4">G</option>
-            </select>
-            <label for="type${i}">脚質適性:</label>
-            <select id="type${i}">
-                <option value="1.17" ${
-                  defaultPace[i] === "大逃げ" ? "selected" : ""
-                }>大逃げ</option>
-                <option value="1.0" ${
-                  defaultPace[i] === "逃げ" ? "selected" : ""
-                }>逃げ</option>
-                <option value="0.985" ${
-                  defaultPace[i] === "先行" ? "selected" : ""
-                }>先行</option>
-                <option value="0.975" ${
-                  defaultPace[i] === "差し" ? "selected" : ""
-                }>差し</option>
-                <option value="0.945" ${
-                  defaultPace[i] === "追込" ? "selected" : ""
-                }>追込</option>
-            </select>
-            <label for="concentration${i}">コンセントレーション:</label>
-            <input type="checkbox" id="concentration${i}" onclick="handleCheckboxClick(${i}, 'concentration')">
-            <label for="focus${i}">集中力:</label>
-            <input type="checkbox" id="focus${i}" onclick="handleCheckboxClick(${i}, 'focus')">
-            <label for="acceleration${i}">加速スキル (小数第2位まで):</label>
-            <input type="number" step="0.01" id="acceleration${i}" min="0" value="0.00">
-        `;
+      <h2>Horse ${i + 1}</h2>
+      <label for="power${i}">補正パワー値:</label>
+      <input type="number" id="power${i}" min="0" value="1300">
+      <label for="track${i}">バ場適性:</label>
+      <select id="track${i}">
+        <option value="1.05">S</option>
+        <option value="1">A</option>
+        <option value="0.9">B</option>
+        <option value="0.8">C</option>
+        <option value="0.6">D</option>
+        <option value="0.4">E</option>
+        <option value="0.2">F</option>
+        <option value="0.1">G</option>
+      </select>
+      <label for="distance${i}">距離適性:</label>
+      <select id="distance${i}">
+        <option value="1.0">S</option>
+        <option value="1.0">A</option>
+        <option value="1.0">B</option>
+        <option value="1.0">C</option>
+        <option value="1.0">D</option>
+        <option value="0.6">E</option>
+        <option value="0.5">F</option>
+        <option value="0.4">G</option>
+      </select>
+      <label for="type${i}">脚質適性:</label>
+      <select id="type${i}">
+        <option value="1.17" ${
+          defaultPace[i] === "大逃げ" ? "selected" : ""
+        }>大逃げ</option>
+        <option value="1.0" ${
+          defaultPace[i] === "逃げ" ? "selected" : ""
+        }>逃げ</option>
+        <option value="0.985" ${
+          defaultPace[i] === "先行" ? "selected" : ""
+        }>先行</option>
+        <option value="0.975" ${
+          defaultPace[i] === "差し" ? "selected" : ""
+        }>差し</option>
+        <option value="0.945" ${
+          defaultPace[i] === "追込" ? "selected" : ""
+        }>追込</option>
+      </select>
+      <label for="concentration${i}">コンセントレーション:</label>
+      <input type="checkbox" id="concentration${i}" onclick="handleCheckboxClick(${i}, 'concentration')">
+      <label for="focus${i}">集中力:</label>
+      <input type="checkbox" id="focus${i}" onclick="handleCheckboxClick(${i}, 'focus')">
+      <label for="acceleration${i}">加速スキル (小数第2位まで):</label>
+      <input type="number" step="0.01" id="acceleration${i}" min="0" value="0.00">
+    `;
     container.appendChild(horseDiv);
   }
 }
@@ -116,211 +116,186 @@ function getHorseK(index) {
 
 // シミュレーションを実行する関数
 function simulate() {
-  const numSimulations = parseInt(
-    document.getElementById("numSimulations").value,
-    10
-  ); // シミュレーションの回数を取得
-  const timeInterval = 1 / 15; // 時間間隔 (1/15秒)
-  const initialSpeed = 3; // 初期速度
-  const countValidRankings = new Array(numHorses).fill(0); // 各馬の条件に合うランキングのカウント
-  let countranks = new Array(numHorses).fill(0);
+  const loadingElement = document.getElementById("loading");
+  loadingElement.classList.remove("hidden");
 
-  for (let i = 0; i < numSimulations; i++) {
-    let results = [];
-    for (let j = 0; j < numHorses; j++) {
-      const K = getHorseK(j); // 馬の加速度Kを計算
-      let D = Math.random() * 0.1; // 出遅れ時間をランダムに設定
-      // コンセントレーションと集中力のチェック
-      if (document.getElementById(`concentration${j}`).checked) {
-        D *= 0.4;
-      } else if (document.getElementById(`focus${j}`).checked) {
-        D *= 0.9;
-      }
+  setTimeout(() => {
+    const numSimulations = parseInt(
+      document.getElementById("numSimulations").value,
+      10
+    );
+    const timeInterval = 1 / 15;
+    const initialSpeed = 3;
+    const countValidRankings = new Array(numHorses).fill(0);
+    let countranks = new Array(numHorses).fill(0);
 
-      let X = initialSpeed; // 初期速度
-      let M1, M2, M3, M4, M5; // 各Fの走行距離
+    for (let i = 0; i < numSimulations; i++) {
+      let results = [];
+      for (let j = 0; j < numHorses; j++) {
+        const K = getHorseK(j);
+        let D = Math.random() * 0.1;
 
-      // 1F目の計算
-      if (D > timeInterval) {
-        D -= timeInterval;
-        M1 = 0;
-      } else {
-        M1 = X * (timeInterval - D);
-        D = -1;
-      }
+        if (document.getElementById(`concentration${j}`).checked) {
+          D *= 0.4;
+        } else if (document.getElementById(`focus${j}`).checked) {
+          D *= 0.9;
+        }
 
-      // 2F目の計算
-      if (D === -1) {
+        let X = initialSpeed;
+        let M1, M2, M3, M4, M5;
+
+        if (D > timeInterval) {
+          D -= timeInterval;
+          M1 = 0;
+        } else {
+          M1 = X * (timeInterval - D);
+          D = -1;
+        }
+
+        if (D === -1) {
+          X += K * timeInterval;
+          M2 = X * timeInterval + M1;
+        } else {
+          M2 = X * (timeInterval - D) + M1;
+        }
+
         X += K * timeInterval;
-        M2 = X * timeInterval + M1;
-      } else {
-        M2 = X * (timeInterval - D) + M1;
+        M3 = X * timeInterval + M2;
+        X += K * timeInterval;
+        M4 = X * timeInterval + M3;
+        X += K * timeInterval;
+        M5 = X * timeInterval + M4;
+
+        results.push({
+          M1: M1.toFixed(5),
+          M2: M2.toFixed(5),
+          M3: M3.toFixed(5),
+          M4: M4.toFixed(5),
+          M5: M5.toFixed(5),
+        });
       }
 
-      // 3F目の計算
-      X += K * timeInterval;
-      M3 = X * timeInterval + M2;
-
-      // 4F目の計算
-      X += K * timeInterval;
-      M4 = X * timeInterval + M3;
-
-      // 5F目の計算
-      X += K * timeInterval;
-      M5 = X * timeInterval + M4;
-
-      results.push({
-        M1: M1.toFixed(5),
-        M2: M2.toFixed(5),
-        M3: M3.toFixed(5),
-        M4: M4.toFixed(5),
-        M5: M5.toFixed(5),
+      let M1Array = results.map((result, index) => ({
+        M1: parseFloat(result.M1),
+        index: index,
+      }));
+      M1Array.sort((a, b) => b.M1 - a.M1);
+      let rank = 1;
+      M1Array.forEach((item) => {
+        if (item.M1 !== 0) {
+          item.rank = rank++;
+        }
       });
-    }
-    // M1Arrayを初期化し、results[n].M1とnの配列を抽出
-    let M1Array = results.map((result, index) => ({
-      M1: parseFloat(result.M1),
-      index: index,
-    }));
 
-    // M1列の大きい順に並び替え
-    M1Array.sort((a, b) => b.M1 - a.M1);
+      let M2Array = results.map((result, index) => ({
+        M2: parseFloat(result.M2),
+        index: index,
+      }));
+      M2Array.sort((a, b) => b.M2 - a.M2);
+      rank = 1;
+      M2Array.forEach((item) => {
+        const correspondingM1 = M1Array.find(
+          (m1Item) => m1Item.index === item.index
+        );
 
-    // ランクを追加
-    let rank = 1;
-    M1Array.forEach((item) => {
-      if (item.M1 !== 0) {
-        item.rank = rank++;
-      }
-    });
-
-    // M2Arrayを初期化し、results[n].M2とnの配列を抽出
-    let M2Array = results.map((result, index) => ({
-      M2: parseFloat(result.M2),
-      index: index,
-    }));
-
-    // M2列の大きい順に並び替え
-    M2Array.sort((a, b) => b.M2 - a.M2);
-
-    // ランクを追加
-    rank = 1;
-    M2Array.forEach((item) => {
-      const correspondingM1 = M1Array.find(
-        (m1Item) => m1Item.index === item.index
-      );
-
-      if (item.M2 !== 0) {
-        if (correspondingM1 && correspondingM1.M1 >= 1) {
-          rank++;
-        } else {
-          item.rank = rank++;
+        if (item.M2 !== 0) {
+          if (correspondingM1 && correspondingM1.M1 >= 1) {
+            rank++;
+          } else {
+            item.rank = rank++;
+          }
         }
-      }
-    });
+      });
 
-    // M3Arrayを初期化し、results[n].M3とnの配列を抽出
-    let M3Array = results.map((result, index) => ({
-      M3: parseFloat(result.M3),
-      index: index,
-    }));
+      let M3Array = results.map((result, index) => ({
+        M3: parseFloat(result.M3),
+        index: index,
+      }));
+      M3Array.sort((a, b) => b.M3 - a.M3);
+      rank = 1;
+      M3Array.forEach((item) => {
+        const correspondingM2 = M2Array.find(
+          (m2Item) => m2Item.index === item.index
+        );
 
-    // M3列の大きい順に並び替え
-    M3Array.sort((a, b) => b.M3 - a.M3);
-
-    // ランクを追加
-    rank = 1;
-    M3Array.forEach((item) => {
-      const correspondingM2 = M2Array.find(
-        (m2Item) => m2Item.index === item.index
-      );
-
-      if (item.M3 !== 0) {
-        if (correspondingM2 && correspondingM2.M2 >= 1) {
-          rank++;
-        } else {
-          item.rank = rank++;
+        if (item.M3 !== 0) {
+          if (correspondingM2 && correspondingM2.M2 >= 1) {
+            rank++;
+          } else {
+            item.rank = rank++;
+          }
         }
-      }
-    });
+      });
 
-    // M4Arrayを初期化し、results[n].M4とnの配列を抽出
-    let M4Array = results.map((result, index) => ({
-      M4: parseFloat(result.M4),
-      index: index,
-    }));
+      let M4Array = results.map((result, index) => ({
+        M4: parseFloat(result.M4),
+        index: index,
+      }));
+      M4Array.sort((a, b) => b.M4 - a.M4);
+      rank = 1;
+      M4Array.forEach((item) => {
+        const correspondingM3 = M3Array.find(
+          (m3Item) => m3Item.index === item.index
+        );
 
-    // M4列の大きい順に並び替え
-    M4Array.sort((a, b) => b.M4 - a.M4);
-
-    // ランクを追加
-    rank = 1;
-    M4Array.forEach((item) => {
-      const correspondingM3 = M3Array.find(
-        (m3Item) => m3Item.index === item.index
-      );
-
-      if (item.M4 !== 0) {
-        if (correspondingM3 && correspondingM3.M3 >= 1) {
-          rank++;
-        } else {
-          item.rank = rank++;
+        if (item.M4 !== 0) {
+          if (correspondingM3 && correspondingM3.M3 >= 1) {
+            rank++;
+          } else {
+            item.rank = rank++;
+          }
         }
-      }
-    });
+      });
 
-    // M5Arrayを初期化し、results[n].M5とnの配列を抽出
-    let M5Array = results.map((result, index) => ({
-      M5: parseFloat(result.M5),
-      index: index,
-    }));
+      let M5Array = results.map((result, index) => ({
+        M5: parseFloat(result.M5),
+        index: index,
+      }));
+      M5Array.sort((a, b) => b.M5 - a.M5);
+      rank = 1;
+      M5Array.forEach((item) => {
+        const correspondingM4 = M4Array.find(
+          (m4Item) => m4Item.index === item.index
+        );
 
-    // M5列の大きい順に並び替え
-    M5Array.sort((a, b) => b.M5 - a.M5);
-
-    // ランクを追加
-    rank = 1;
-    M5Array.forEach((item) => {
-      const correspondingM4 = M4Array.find(
-        (m4Item) => m4Item.index === item.index
-      );
-
-      if (item.M5 !== 0) {
-        if (correspondingM4 && correspondingM4.M4 >= 1) {
-          rank++;
-        } else {
-          item.rank = rank++;
+        if (item.M5 !== 0) {
+          if (correspondingM4 && correspondingM4.M4 >= 1) {
+            rank++;
+          } else {
+            item.rank = rank++;
+          }
         }
-      }
-    });
-    // 各馬のランキングをカウント
-    for (let n = 0; n < numHorses; n++) {
-      let ranks = [
-        M1Array.find((item) => item.index === n)?.rank,
-        M2Array.find((item) => item.index === n)?.rank,
-        M3Array.find((item) => item.index === n)?.rank,
-        M4Array.find((item) => item.index === n)?.rank,
-        M5Array.find((item) => item.index === n)?.rank,
-      ];
+      });
 
-      if (ranks.some((rank) => [2, 3, 4, 5, 6].includes(rank))) {
-        countranks[n]++;
+      for (let n = 0; n < numHorses; n++) {
+        let ranks = [
+          M1Array.find((item) => item.index === n)?.rank,
+          M2Array.find((item) => item.index === n)?.rank,
+          M3Array.find((item) => item.index === n)?.rank,
+          M4Array.find((item) => item.index === n)?.rank,
+          M5Array.find((item) => item.index === n)?.rank,
+        ];
+
+        if (ranks.some((rank) => [2, 3, 4, 5, 6].includes(rank))) {
+          countranks[n]++;
+        }
       }
     }
-  }
 
-  // 確率を計算して表示
-  const probability = countranks.map((count) => (count / numSimulations) * 100);
-  const resultText = probability
-    .map(
-      (prob, index) =>
-        `馬 ${index + 1} が 2位から6位になる確率: ${prob.toFixed(2)}%`
-    )
-    .join("<br>");
-  document.getElementById("result").innerHTML = resultText;
+    const probability = countranks.map(
+      (count) => (count / numSimulations) * 100
+    );
+    const resultText = probability
+      .map(
+        (prob, index) =>
+          `馬 ${index + 1} が 2位から6位になる確率: ${prob.toFixed(2)}%`
+      )
+      .join("<br>");
+    document.getElementById("result").innerHTML = resultText;
 
-  // 処理完了メッセージをポップアップで表示
-  alert("シミュレーションが終了しました。");
+    alert("シミュレーションが終了しました。");
+    loadingElement.classList.add("hidden");
+  }, 100);
 }
 
 // ページロード時に馬の入力フォームを作成

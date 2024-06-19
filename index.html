@@ -12,6 +12,10 @@
     <input type="number" id="numSimulations" value="200000" min="1" />
     <div id="horseInputs" class="card-container"></div>
     <button onclick="simulate()">シミュレーションを実行</button>
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p>計算中です...</p>
+    </div>
     <div id="result"></div>
     <script src="script.js"></script>
   </body>

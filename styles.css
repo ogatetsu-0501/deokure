@@ -1,33 +1,71 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-}
-
-.card-container {
+  }
+  
+  .card-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-}
-
-.card {
+  }
+  
+  .card {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 10px;
-    width: calc(33.33% - 20px); /* カードを横3列に配置 */
+    width: calc(33.33% - 20px);
     box-sizing: border-box;
-}
-
-.horse-input label {
+  }
+  
+  .horse-input label {
     display: block;
     margin-bottom: 5px;
-}
-
-.horse-input input, .horse-input select {
+  }
+  
+  .horse-input input,
+  .horse-input select {
     width: 100%;
     padding: 5px;
     margin-bottom: 10px;
-}
-
-#result {
+  }
+  
+  #result {
     margin-top: 20px;
-}
+  }
+  
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+  }
+  
+  .hidden {
+    display: none;
+  }
+
+  .spinner {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
