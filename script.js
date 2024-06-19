@@ -123,13 +123,13 @@ function simulate() {
   const timeInterval = 1 / 15; // 時間間隔 (1/15秒)
   const initialSpeed = 3; // 初期速度
   const countValidRankings = new Array(numHorses).fill(0); // 各馬の条件に合うランキングのカウント
+  let countranks = new Array(numHorses).fill(0);
 
   for (let i = 0; i < numSimulations; i++) {
     let results = [];
     for (let j = 0; j < numHorses; j++) {
       const K = getHorseK(j); // 馬の加速度Kを計算
       let D = Math.random() * 0.1; // 出遅れ時間をランダムに設定
-
       // コンセントレーションと集中力のチェック
       if (document.getElementById(`concentration${j}`).checked) {
         D *= 0.4;
@@ -141,12 +141,12 @@ function simulate() {
       let M1, M2, M3, M4, M5; // 各Fの走行距離
 
       // 1F目の計算
-      if (D < timeInterval) {
-        M1 = X * (timeInterval - D);
-        D = -1;
-      } else {
+      if (D > timeInterval) {
         D -= timeInterval;
         M1 = 0;
+      } else {
+        M1 = X * (timeInterval - D);
+        D = -1;
       }
 
       // 2F目の計算
@@ -169,39 +169,148 @@ function simulate() {
       X += K * timeInterval;
       M5 = X * timeInterval + M4;
 
-      results.push({ M1, M2, M3, M4, M5 });
+      results.push({
+        M1: M1.toFixed(5),
+        M2: M2.toFixed(5),
+        M3: M3.toFixed(5),
+        M4: M4.toFixed(5),
+        M5: M5.toFixed(5),
+      });
     }
+    // M1Arrayを初期化し、results[n].M1とnの配列を抽出
+    let M1Array = results.map((result, index) => ({
+      M1: parseFloat(result.M1),
+      index: index,
+    }));
 
-    // 各馬の順位を計算してログに表示
-    const ranks = { M1: [], M2: [], M3: [], M4: [], M5: [] };
+    // M1列の大きい順に並び替え
+    M1Array.sort((a, b) => b.M1 - a.M1);
 
-    ["M1", "M2", "M3", "M4", "M5"].forEach((metric, index) => {
-      results
-        .map((result, i) => ({ value: result[metric], index: i }))
-        .sort((a, b) => b.value - a.value)
-        .forEach((result, rank) => {
-          ranks[metric][result.index] = rank + 1;
-        });
-    });
-
-    // 各馬のランキングをカウント
-    results.forEach((_, horseIndex) => {
-      if (
-        (ranks.M1[horseIndex] >= 2 && ranks.M1[horseIndex] <= 6) ||
-        (ranks.M2[horseIndex] >= 2 && ranks.M2[horseIndex] <= 6) ||
-        (ranks.M3[horseIndex] >= 2 && ranks.M3[horseIndex] <= 6) ||
-        (ranks.M4[horseIndex] >= 2 && ranks.M4[horseIndex] <= 6) ||
-        (ranks.M5[horseIndex] >= 2 && ranks.M5[horseIndex] <= 6)
-      ) {
-        countValidRankings[horseIndex]++;
+    // ランクを追加
+    let rank = 1;
+    M1Array.forEach((item) => {
+      if (item.M1 !== 0) {
+        item.rank = rank++;
       }
     });
+
+    // M2Arrayを初期化し、results[n].M2とnの配列を抽出
+    let M2Array = results.map((result, index) => ({
+      M2: parseFloat(result.M2),
+      index: index,
+    }));
+
+    // M2列の大きい順に並び替え
+    M2Array.sort((a, b) => b.M2 - a.M2);
+
+    // ランクを追加
+    rank = 1;
+    M2Array.forEach((item) => {
+      const correspondingM1 = M1Array.find(
+        (m1Item) => m1Item.index === item.index
+      );
+
+      if (item.M2 !== 0) {
+        if (correspondingM1 && correspondingM1.M1 >= 1) {
+          rank++;
+        } else {
+          item.rank = rank++;
+        }
+      }
+    });
+
+    // M3Arrayを初期化し、results[n].M3とnの配列を抽出
+    let M3Array = results.map((result, index) => ({
+      M3: parseFloat(result.M3),
+      index: index,
+    }));
+
+    // M3列の大きい順に並び替え
+    M3Array.sort((a, b) => b.M3 - a.M3);
+
+    // ランクを追加
+    rank = 1;
+    M3Array.forEach((item) => {
+      const correspondingM2 = M2Array.find(
+        (m2Item) => m2Item.index === item.index
+      );
+
+      if (item.M3 !== 0) {
+        if (correspondingM2 && correspondingM2.M2 >= 1) {
+          rank++;
+        } else {
+          item.rank = rank++;
+        }
+      }
+    });
+
+    // M4Arrayを初期化し、results[n].M4とnの配列を抽出
+    let M4Array = results.map((result, index) => ({
+      M4: parseFloat(result.M4),
+      index: index,
+    }));
+
+    // M4列の大きい順に並び替え
+    M4Array.sort((a, b) => b.M4 - a.M4);
+
+    // ランクを追加
+    rank = 1;
+    M4Array.forEach((item) => {
+      const correspondingM3 = M3Array.find(
+        (m3Item) => m3Item.index === item.index
+      );
+
+      if (item.M4 !== 0) {
+        if (correspondingM3 && correspondingM3.M3 >= 1) {
+          rank++;
+        } else {
+          item.rank = rank++;
+        }
+      }
+    });
+
+    // M5Arrayを初期化し、results[n].M5とnの配列を抽出
+    let M5Array = results.map((result, index) => ({
+      M5: parseFloat(result.M5),
+      index: index,
+    }));
+
+    // M5列の大きい順に並び替え
+    M5Array.sort((a, b) => b.M5 - a.M5);
+
+    // ランクを追加
+    rank = 1;
+    M5Array.forEach((item) => {
+      const correspondingM4 = M4Array.find(
+        (m4Item) => m4Item.index === item.index
+      );
+
+      if (item.M5 !== 0) {
+        if (correspondingM4 && correspondingM4.M4 >= 1) {
+          rank++;
+        } else {
+          item.rank = rank++;
+        }
+      }
+    });
+    // 各馬のランキングをカウント
+    for (let n = 0; n < numHorses; n++) {
+      let ranks = [
+        M1Array.find((item) => item.index === n)?.rank,
+        M2Array.find((item) => item.index === n)?.rank,
+        M3Array.find((item) => item.index === n)?.rank,
+        M4Array.find((item) => item.index === n)?.rank,
+        M5Array.find((item) => item.index === n)?.rank,
+      ];
+
+      if (ranks.some((rank) => [2, 3, 4, 5, 6].includes(rank))) {
+        countranks[n]++;
+      }
+    }
   }
 
   // 確率を計算して表示
-  const probability = countValidRankings.map(
-    (count) => (count / numSimulations) * 100
-  );
+  const probability = countranks.map((count) => (count / numSimulations) * 100);
   const resultText = probability
     .map(
       (prob, index) =>
